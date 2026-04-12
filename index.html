@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFEF9;
+    --ink: #1C1917;
+    --ink-light: #57534E;
+    --ink-muted: #A8A29E;
+    --sage: #4A7C59;
+    --sage-light: #EBF2ED;
+    --sage-mid: #C5DBC9;
+    --amber: #C2700F;
+    --amber-light: #FEF3E2;
+    --border: #E7E2D9;
+    --border-strong: #C9C2B6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .site-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+
+  .site-title em {
+    font-style: italic;
+    color: var(--sage);
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 1.5rem;
+    margin-left: auto;
+  }
+
+  .site-nav a {
+    font-size: 13px;
+    color: var(--ink-light);
+    text-decoration: none;
+    letter-spacing: 0.2px;
+  }
+
+  .site-nav a:hover { color: var(--ink); }
+
+  .hero {
+    padding: 3rem 2rem 0;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--sage);
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--ink-light);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-weight: 300;
+  }
+
+  .season-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--sage-light);
+    color: var(--sage);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    letter-spacing: 0.2px;
+  }
+
+  .season-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--sage);
+  }
+
+  .search-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-section {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+
+  .ingredient-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--sage-light);
+    color: var(--sage);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 100px;
+    border: 1px solid var(--sage-mid);
+  }
+
+  .chip-remove {
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 11px;
+    line-height: 1;
+    border: none;
+    background: none;
+    color: var(--sage);
+    padding: 0;
+  }
+
+  .chip-remove:hover { opacity: 1; }
+
+  .ingredient-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ingredient-input {
+    flex: 1;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    outline: none;
+  }
+
+  .ingredient-input:focus {
+    border-color: var(--sage);
+    background: white;
+  }
+
+  .ingredient-input::placeholder { color: var(--ink-muted); }
+
+  .add-btn {
+    background: var(--sage);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .add-btn:hover { background: #3a6347; }
+
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .filter-pill {
+    font-size: 13px;
+    padding: 5px 13px;
+    border-radius: 100px;
+    border: 1px solid var(--border-strong);
+    background: var(--warm-white);
+    color: var(--ink-light);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.12s;
+  }
+
+  .filter-pill:hover {
+    border-color: var(--sage-mid);
+    color: var(--sage);
+  }
+
+  .filter-pill.active {
+    background: var(--sage);
+    border-color: var(--sage);
+    color: white;
+  }
+
+  .time-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .time-pill {
+    font-size: 13px;
+    padding: 5px 13px;
+    border-radius: 100px;
+    border: 1px solid var(--border-strong);
+    background: var(--warm-white);
+    color: var(--ink-light);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.12s;
+  }
+
+  .time-pill:hover { border-color: var(--amber); color: var(--amber); }
+
+  .time-pill.active {
+    background: var(--amber-light);
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+
+  .find-btn {
+    display: block;
+    width: calc(100% - 3rem);
+    margin: 1.25rem 1.5rem;
+    padding: 13px;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: background 0.15s;
+  }
+
+  .find-btn:hover { background: #2d2a27; }
+  .find-btn:disabled { background: var(--ink-muted); cursor: not-allowed; }
+
+  .chat-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+
+  .chat-card.visible { display: block; }
+
+  .chat-header {
+    padding: 0.875rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .ai-indicator {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--sage);
+  }
+
+  .chat-messages { padding: 0; }
+
+  .message {
+    padding: 1rem 1.5rem;
+    font-size: 14px;
+    line-height: 1.65;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .message:last-child { border-bottom: none; }
+
+  .message.ai {
+    background: var(--cream);
+    color: var(--ink);
+  }
+
+  .message.ai .ai-name {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--sage);
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  .message.user {
+    background: var(--warm-white);
+    text-align: right;
+    color: var(--ink-light);
+  }
+
+  .quick-replies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--warm-white);
+  }
+
+  .qr-btn {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border-strong);
+    background: white;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.12s;
+  }
+
+  .qr-btn:hover {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: white;
+  }
+
+  .typing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1rem 1.5rem;
+    background: var(--cream);
+  }
+
+  .typing span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink-muted);
+    animation: bounce 1.2s infinite;
+  }
+
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+  }
+
+  .results-section {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem;
+    display: none;
+  }
+
+  .results-section.visible { display: block; }
+
+  .results-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .recipe-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+
+  .recipe-card:hover {
+    border-color: var(--sage-mid);
+    transform: translateY(-2px);
+  }
+
+  .recipe-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .recipe-desc {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    font-weight: 300;
+  }
+
+  .recipe-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 100px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+
+  .tag-season { background: var(--sage-light); color: var(--sage); }
+  .tag-time { background: var(--amber-light); color: var(--amber); }
+  .tag-cuisine { background: #EEF2FF; color: #4338CA; }
+
+  .match-reason {
+    font-size: 12px;
+    color: var(--sage);
+    margin-top: 8px;
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .main-content {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .error-msg {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-size: 14px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  .error-msg.visible { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">terry's <em>kitchen</em></div>
+  <nav class="site-nav">
+    <a href="#">All recipes</a>
+    <a href="#">By season</a>
+    <a href="#">Find by ingredients</a>
+  </nav>
+</header>
+
+<div class="main-content">
+  <div class="hero">
+    <div class="hero-label">Ingredient search</div>
+    <h1>What's in your<br><em>fridge?</em></h1>
+    <p class="hero-sub">Add what you have and I'll find recipes that work — asking a few questions to narrow things down.</p>
+    <div class="season-pill" id="seasonPill">
+      <span class="season-dot"></span>
+      <span id="seasonText">Loading season...</span>
+    </div>
+  </div>
+
+  <div class="search-card">
+    <div class="search-section">
+      <div class="section-label">Your ingredients</div>
+      <div class="ingredient-chips" id="chipContainer"></div>
+      <div class="ingredient-input-row">
+        <input type="text" class="ingredient-input" id="ingredientInput" placeholder="e.g. chicken, garlic, lemon..." />
+        <button class="add-btn" onclick="addIngredient()">Add</button>
+      </div>
+    </div>
+
+    <div class="search-section">
+      <div class="section-label">Cuisine</div>
+      <div class="filter-pills" id="cuisineFilters">
+        <button class="filter-pill active" onclick="toggleCuisine(this, '')">Any</button>
+        <button class="filter-pill" onclick="toggleCuisine(this, 'Italian')">Italian</button>
+        <button class="filter-pill" onclick="toggleCuisine(this, 'Asian')">Asian</button>
+        <button class="filter-pill" onclick="toggleCuisine(this, 'American')">American</button>
+        <button class="filter-pill" onclick="toggleCuisine(this, 'Mediterranean')">Mediterranean</button>
+        <button class="filter-pill" onclick="toggleCuisine(this, 'Mexican')">Mexican</button>
+        <button class="filter-pill" onclick="toggleCuisine(this, 'French')">French</button>
+      </div>
+    </div>
+
+    <div class="search-section">
+      <div class="section-label">Time available</div>
+      <div class="time-options" id="timeFilters">
+        <button class="time-pill active" onclick="toggleTime(this, 0)">Any</button>
+        <button class="time-pill" onclick="toggleTime(this, 30)">Under 30 min</button>
+        <button class="time-pill" onclick="toggleTime(this, 60)">Under 60 min</button>
+        <button class="time-pill" onclick="toggleTime(this, 90)">Under 90 min</button>
+      </div>
+    </div>
+
+    <button class="find-btn" id="findBtn" onclick="startSearch()">Find recipes →</button>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="chat-card" id="chatCard">
+    <div class="chat-header">
+      <span class="ai-indicator"></span>
+      Narrowing it down
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="quick-replies" id="quickReplies" style="display:none;"></div>
+  </div>
+</div>
+
+<div class="results-section" id="resultsSection">
+  <div class="results-label" id="resultsLabel"></div>
+  <div class="recipe-grid" id="recipeGrid"></div>
+</div>
+
+<script>
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+
+let ingredients = [];
+let selectedCuisine = '';
+let selectedTime = 0;
+let allRecipes = [];
+let conversationHistory = [];
+let clarifyingAnswers = {};
+
+function getSeason() {
+  const month = new Date().getMonth() + 1;
+  if (month >= 3 && month <= 5) return { name: 'spring', desc: 'lighter preparations, fresh herbs' };
+  if (month >= 6 && month <= 8) return { name: 'summer', desc: 'bright, fresh, minimal cooking' };
+  if (month >= 9 && month <= 11) return { name: 'fall', desc: 'hearty, warming dishes' };
+  return { name: 'winter', desc: 'rich, comforting meals' };
+}
+
+const season = getSeason();
+document.getElementById('seasonText').textContent = `Showing ${season.name} recipes — ${season.desc}`;
+
+document.getElementById('ingredientInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addIngredient();
+});
+
+function addIngredient() {
+  const input = document.getElementById('ingredientInput');
+  const val = input.value.trim();
+  if (!val || ingredients.includes(val.toLowerCase())) { input.value = ''; return; }
+  ingredients.push(val.toLowerCase());
+  input.value = '';
+  renderChips();
+}
+
+function renderChips() {
+  const container = document.getElementById('chipContainer');
+  container.innerHTML = ingredients.map((ing, i) => `
+    <span class="chip">${ing} <button class="chip-remove" onclick="removeIngredient(${i})">✕</button></span>
+  `).join('');
+}
+
+function removeIngredient(i) {
+  ingredients.splice(i, 1);
+  renderChips();
+}
+
+function toggleCuisine(btn, val) {
+  document.querySelectorAll('#cuisineFilters .filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCuisine = val;
+}
+
+function toggleTime(btn, val) {
+  document.querySelectorAll('#timeFilters .time-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedTime = val;
+}
+
+async function fetchRecipes() {
+  const res = await fetch('/api/recipes');
+  if (!res.ok) throw new Error('Could not load recipes');
+  const data = await res.json();
+  return data.records.map(r => ({ id: r.id, ...r.fields }));
+}
+
+async function startSearch() {
+  if (ingredients.length === 0) {
+    showError('Please add at least one ingredient before searching.');
+    return;
+  }
+
+  hideError();
+  conversationHistory = [];
+  clarifyingAnswers = {};
+
+  document.getElementById('findBtn').disabled = true;
+  document.getElementById('chatCard').classList.add('visible');
+  document.getElementById('resultsSection').classList.remove('visible');
+  document.getElementById('chatMessages').innerHTML = '';
+  document.getElementById('quickReplies').style.display = 'none';
+
+  try {
+    allRecipes = await fetchRecipes();
+    await askClarifyingQuestion();
+  } catch (err) {
+    showError('Something went wrong: ' + err.message);
+    document.getElementById('findBtn').disabled = false;
+  }
+}
+
+async function askClarifyingQuestion() {
+  showTyping();
+
+  const systemPrompt = `You are a friendly recipe assistant. The user has these ingredients: ${ingredients.join(', ')}.
+Season: ${season.name}. ${selectedCuisine ? 'Preferred cuisine: ' + selectedCuisine + '.' : ''} ${selectedTime ? 'Max cook time: ' + selectedTime + ' minutes.' : ''}
+Available recipes: ${JSON.stringify(allRecipes.map(r => ({ name: r.Name, cuisine: r.Cuisine, time: r['Time (minutes)'], ingredients: r.Ingredients, season: r.Season })))}
+Previous clarifying answers: ${JSON.stringify(clarifyingAnswers)}
+
+Your job: Ask ONE short, friendly clarifying question that would help narrow down which recipe to recommend.
+Focus on practical things like: do they have a specific pantry staple the recipe needs, dietary preference, cooking method preference, how hungry they are, etc.
+Make it conversational and specific to the recipes available.
+Also provide 2-4 short answer options.
+
+Respond ONLY with valid JSON in this exact format:
+{"question": "...", "options": ["...", "...", "..."]}`;
+
+  const messages = [{ role: 'user', content: 'Ask me a clarifying question to help find the right recipe.' }];
+  if (conversationHistory.length > 0) {
+    messages.push(...conversationHistory);
+  }
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 300,
+        system: systemPrompt,
+        messages
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content[0].text.trim();
+    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+    hideTyping();
+    addAIMessage(parsed.question);
+    showQuickReplies(parsed.options, parsed.question);
+  } catch (e) {
+    hideTyping();
+    await generateResults();
+  }
+}
+
+async function handleAnswer(question, answer) {
+  clarifyingAnswers[question] = answer;
+  conversationHistory.push({ role: 'assistant', content: question });
+  conversationHistory.push({ role: 'user', content: answer });
+
+  addUserMessage(answer);
+  hideQuickReplies();
+
+  if (Object.keys(clarifyingAnswers).length >= 2) {
+    await generateResults();
+  } else {
+    await askClarifyingQuestion();
+  }
+}
+
+async function generateResults() {
+  showTyping();
+
+  const systemPrompt = `You are a recipe matcher. Given ingredients and context, rank which recipes match best.
+
+User's ingredients: ${ingredients.join(', ')}
+Season: ${season.name}
+${selectedCuisine ? 'Cuisine preference: ' + selectedCuisine : ''}
+${selectedTime ? 'Max time: ' + selectedTime + ' minutes' : ''}
+Clarifying answers: ${JSON.stringify(clarifyingAnswers)}
+
+Available recipes:
+${JSON.stringify(allRecipes)}
+
+Return ONLY valid JSON array of matched recipe names with a short reason (max 3 recipes, best first):
+[{"name": "Recipe Name", "reason": "Short reason why this fits"}, ...]
+
+Only include recipes that genuinely match. If none match well, return an empty array.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 500,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: 'Which recipes match best?' }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content[0].text.trim();
+    const matches = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+    hideTyping();
+
+    if (matches.length === 0) {
+      addAIMessage("I couldn't find a great match in the current recipe collection for those ingredients. Try adding more ingredients or check back as the recipe library grows!");
+    } else {
+      const names = matches.map(m => m.name).join(', ');
+      addAIMessage(`Based on everything you've told me, here ${matches.length === 1 ? 'is' : 'are'} your best ${matches.length === 1 ? 'match' : 'matches'}: ${names}.`);
+      showResults(matches);
+    }
+  } catch (e) {
+    hideTyping();
+    showError('Could not generate recommendations. Please try again.');
+  }
+
+  document.getElementById('findBtn').disabled = false;
+}
+
+function showResults(matches) {
+  const section = document.getElementById('resultsSection');
+  const grid = document.getElementById('recipeGrid');
+  const label = document.getElementById('resultsLabel');
+
+  section.classList.add('visible');
+  label.textContent = `${matches.length} recipe${matches.length !== 1 ? 's' : ''} matched · ${season.name}`;
+
+  grid.innerHTML = matches.map(match => {
+    const recipe = allRecipes.find(r => r.Name === match.name);
+    if (!recipe) return '';
+    const seasons = Array.isArray(recipe.Season) ? recipe.Season : (recipe.Season ? [recipe.Season] : []);
+    const seasonTags = seasons.map(s => `<span class="tag tag-season">${s}</span>`).join('');
+    return `
+      <div class="recipe-card">
+        <div class="recipe-name">${recipe.Name}</div>
+        <div class="recipe-desc">${recipe.Description || ''}</div>
+        <div class="recipe-tags">
+          ${seasonTags}
+          ${recipe['Time (minutes)'] ? `<span class="tag tag-time">${recipe['Time (minutes)']} min</span>` : ''}
+          ${recipe.Cuisine ? `<span class="tag tag-cuisine">${recipe.Cuisine}</span>` : ''}
+        </div>
+        ${match.reason ? `<div class="match-reason">${match.reason}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function addAIMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'message ai';
+  div.innerHTML = `<div class="ai-name">Recipe assistant</div>${text}`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'message user';
+  div.textContent = text;
+  msgs.appendChild(div);
+}
+
+function showQuickReplies(options, question) {
+  const qr = document.getElementById('quickReplies');
+  qr.style.display = 'flex';
+  qr.innerHTML = options.map(opt =>
+    `<button class="qr-btn" onclick="handleAnswer(${JSON.stringify(question)}, ${JSON.stringify(opt)})">${opt}</button>`
+  ).join('');
+}
+
+function hideQuickReplies() {
+  const qr = document.getElementById('quickReplies');
+  qr.style.display = 'none';
+  qr.innerHTML = '';
+}
+
+let typingEl = null;
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  typingEl = document.createElement('div');
+  typingEl.className = 'typing';
+  typingEl.innerHTML = '<span></span><span></span><span></span>';
+  msgs.appendChild(typingEl);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  if (typingEl) { typingEl.remove(); typingEl = null; }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('visible');
+}
+</script>
+</body>
+</html>
