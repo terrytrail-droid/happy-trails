@@ -503,8 +503,6 @@
 </div>
 
 <script>
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-
 let ingredients = [];
 let selectedCategory = '';
 let selectedTime = 0;
@@ -558,6 +556,16 @@ function toggleTime(btn, val) {
   document.querySelectorAll('#timeFilters .time-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   selectedTime = val;
+}
+
+async function callClaude(payload) {
+  const res = await fetch('/api/recipes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error('API call failed');
+  return await res.json();
 }
 
 async function fetchRecipes() {
@@ -614,18 +622,13 @@ Respond ONLY with valid JSON:
 {"question": "...", "options": ["...", "...", "..."]}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 300,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: 'Ask me a clarifying question.' }]
-      })
+    const data = await callClaude({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 300,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: 'Ask me a clarifying question.' }]
     });
 
-    const data = await res.json();
     const text = data.content[0].text.trim();
     const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
 
@@ -671,18 +674,13 @@ Return ONLY a valid JSON array (max 3 recipes, best first). Only include genuine
 If nothing matches well, return [].`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 500,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: 'Which recipes match best?' }]
-      })
+    const data = await callClaude({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: 'Which recipes match best?' }]
     });
 
-    const data = await res.json();
     const text = data.content[0].text.trim();
     const matches = JSON.parse(text.replace(/```json|```/g, '').trim());
 
