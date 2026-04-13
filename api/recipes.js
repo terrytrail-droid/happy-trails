@@ -7,7 +7,6 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // GET /api/recipes — fetch recipes from Airtable
   if (req.method === 'GET') {
     try {
       const url = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/${process.env.AIRTABLE_TABLE}`;
@@ -21,9 +20,13 @@ export default async function handler(req, res) {
     }
   }
 
-  // POST /api/recipes — proxy Claude API call
   if (req.method === 'POST') {
     try {
+      let body = req.body;
+      if (typeof body === 'string') {
+        body = JSON.parse(body);
+      }
+
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -31,10 +34,12 @@ export default async function handler(req, res) {
           'x-api-key': process.env.ANTHROPIC_API_KEY,
           'anthropic-version': '2023-06-01'
         },
-        body: JSON.stringify(req.body)
+        body: JSON.stringify(body)
       });
-      const data = await response.json();
-      return res.status(200).json(data);
+
+      const text = await response.text();
+      
+      return res.status(response.status).send(text);
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
