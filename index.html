@@ -291,16 +291,18 @@
 
   .message.user { background: var(--warm-white); text-align: right; color: var(--ink-light); }
 
-  .quick-replies {
+.quick-replies {
     display: flex;
     flex-wrap: wrap;
     gap: 7px;
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--border);
     background: var(--warm-white);
+    position: relative;
+    z-index: 10;
   }
 
-  .qr-btn {
+.qr-btn {
     font-size: 13px;
     padding: 6px 14px;
     border-radius: 100px;
@@ -310,6 +312,8 @@
     cursor: pointer;
     font-family: 'DM Sans', sans-serif;
     transition: all 0.12s;
+    position: relative;
+    z-index: 10;
   }
 
   .qr-btn:hover { border-color: var(--ink); background: var(--ink); color: white; }
